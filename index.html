@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO NFT</title>
+    <link rel="stylesheet" href="http://192.168.100.12:3000/style.css" />
+  </head>
+  <body>
+    <!-- <div class="mode-btn" onclick="mode()">Dark</div> -->
+    <div class="login">
+
+      <div class="form">
+        <h1>Login</h1>
+        <div class="label">
+          <div class="title">Email</div>
+          <input class="mail" type="email" required />
+        </div>
+        <div class="label">
+          <div class="title">PassWord</div>
+          <input class="pass" type="password"required />
+        </div>
+
+        <div class="label">
+          <div class="title">Je n'ai pas encore un compte <span class="change" onclick="page('Register')"> Register</span></div>
+          <div class="change" onclick="page()"> Back</div>
+        </div>
+      </div>
+
+      <div class="send-box">
+        <div class="login-btn" onclick="login()">Login</div>
+      </div>
+
+    </div>
+    <div class="register">
+
+      <div class="form">
+
+        <div class="col-input">
+          <h1>Register</h1>
+          <div class="label">
+            <div class="title">Psoeudo</div>
+            <input class="psoeudo" type="text"/>
+          </div>
+          <div class="label">
+            <div class="title">Email</div>
+            <input class="email" type="email"/>
+          </div>
+          <div class="label">
+            <div class="title">PassWord</div>
+            <input class="password" type="password"/>
+          </div>
+          <div class="label">
+            <div class="title">PassWord Confirm</div>
+            <input class="passwordconfirm" type="password"/>
+          </div>
+        </div>
+
+        <div class="col-color">
+          <div class="color-name"></div>
+          <div class="color"></div>
+          <div class="choix" onclick="randomColor()">Random</div>
+          <div class="title">Je ai déjà un compte <span class="change" onclick="page('Login')"> Login</span></div>
+          <div class="change" onclick="page()"> Back</div>
+        </div>
+
+      </div>
+
+      <div class="send-box">
+        <div class="register-btn" onclick="register()">Register</div>
+      </div>
+
+    </div>
+
+    <table class="game"></table>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <script src="http://192.168.100.12:3000/socket.io/socket.io.js"></script>
+    <script src="http://192.168.100.12:3000/app.js"></script>
+  </body>
+</html>
