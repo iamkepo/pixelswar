@@ -1,57 +1,68 @@
 var socket = io();
+const baseURL = "http://192.168.9.122:3000";
 var game = document.querySelector('.game');
-var connecte = new Date();
-var user = undefined
-socket.emit('connecte', connecte);
-socket.on('connecte', (data) => {
-
-  for (let i = 0; i <data.lignes; i++) {
+var table = document.querySelector('table');
+var user = {
+  _id: "user",
+  color: "rgb(255,0,0)"
+};
+var cellules = [];
+axios({
+  method: 'get',
+  url: baseURL+"/getconfig",
+}).then((response)=>{
+  //console.log(response);
+  table.style.width = response.data.width+"px";
+  table.style.height = response.data.height+"px";
+  for (let i = 0; i <response.data.lignes; i++) {
     const tr = document.createElement('tr');
     tr.className = "line"
-    game.appendChild(tr);
+    table.appendChild(tr);
   }
   var line = document.querySelectorAll('.line');
   for (let j = 0; j < line.length; j++) {
-    for (let k = 0; k < data.colonnes; k++) {
+    for (let k = 0; k < response.data.colonnes; k++) {
       const td = document.createElement('td');
       td.className = "cellule";
       line[j].appendChild(td);
     }
   }
-  
+  game.style.display = "flex";
+  cellules = response.data.cellules;
   var cellule = document.querySelectorAll('.cellule');
   for (let i = 0; i < cellule.length; i++) {
-    if (data.cellules[i] != undefined) {
-      cellule[i].textContent = data.cellules[i].value;
-      cellule[i].style.backgroundColor = data.cellules[i].history[data.cellules[i].history.length-1].color
-    }
+    cellule[i].style.backgroundColor = cellules[i].color
+
     cellule[i].onclick = (event) => {
-      if (user) {
-        if (data.cellules[i].histoy[data.cellules[i].history.length-1].color != user.nft) {
+      if (user._id) {
+        if (cellules[i].color != user.color) {
           var click = {
+            _id: cellules[i]._id,
             index: i, 
-            value: parseInt(cellule[i].textContent)+1,
-            modif: {nft: user.nft, date: new Date()}
+            color: user.color
           };
-          cellule[i].textContent = click.value;
-          cellule[i].style.backgroundColor = user.nft;
+          console.log(click);
           socket.emit('Click', click);
         }
         
       } else {
         page("Login");
-        //window.location.assign("http://192.168.100.12:3000/Register_Login")
       }
     }
   }
 })
+
+window.addEventListener('load',(event)=>{
+  page();
+  //mode()
+})
+
 socket.on('Click', (click) => {
   console.log(click);
   var cellule = document.querySelectorAll('.cellule');
   for (let j = 0; j < cellule.length; j++) {
     if (click.index == j) {
-      cellule[j].textContent = click.value;
-      cellule[j].style.backgroundColor = click.modif.nft
+      cellule[j].style.backgroundColor = click.color
     }
   }
 })
@@ -67,34 +78,28 @@ var mail = document.querySelector('.mail');
 var pass = document.querySelector('.pass');
 var passwordconfirm = document.querySelector('.passwordconfirm');
 
-var Register = document.querySelector('.register');
-var Login = document.querySelector('.login');
-
-
-window.addEventListener('load',(event)=>{
-  page();
-  //mode()
-})
+var reg = document.querySelector('.register');
+var log = document.querySelector('.login');
 
 function page(param) {
   switch (param) {
     case "Register":
-      Register.style.display = "flex";
-      Login.style.display = "none";
+      reg.style.display = "flex";
+      log.style.display = "none";
       game.style.display = "none";
       randomColor();
     break;
 
     case "Login":
-      Register.style.display = "none";
-      Login.style.display = "flex";
+      reg.style.display = "none";
+      log.style.display = "flex";
       game.style.display = "none";
     break;
   
     default:
-      Login.style.display = "none";
-      Register.style.display = "none";
-      game.style.display = "table";
+      log.style.display = "none";
+      reg.style.display = "none";
+      game.style.display = "flex";
     break;
   }
 }

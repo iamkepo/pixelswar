@@ -12,9 +12,13 @@ body {
   justify-content: center;
   flex-direction: column;
 }
-table {
-  width : 2300px;
-  height : 1150px;
+.game { 
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 .cellule {
   color: #FFF;
@@ -27,6 +31,10 @@ table, tr, td {
   border-collapse: collapse;
 }
 
+table {
+  border: 1px solid #FFFFFF;
+  align-self: center;
+}
 .register {
   width: 60%;
   height: 70%;
