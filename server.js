@@ -36,7 +36,7 @@ app.get('/file/:file', (req, res) => {
 
 
 connect.start().then(()=>{
-  //connect.insertColors();
+  //connect.testColors();
   //connect.insertCellules();
   io.on('connection', (socket) => {
     console.log('a user connected');

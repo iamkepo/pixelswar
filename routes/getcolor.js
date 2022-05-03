@@ -4,7 +4,7 @@ const { ObjectId } = require('mongodb');
 var connect = require('../db/connect');
 
 router.get('/:color', (req, res) => {
-  connect.collection.colors
+  connect.collection.testColors
   .findOne({_id: ObjectId(req.params.color)})
   .then((response)=> {
   //console.log(response.color);

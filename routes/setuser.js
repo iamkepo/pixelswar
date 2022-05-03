@@ -19,6 +19,7 @@ router.post('/', async (req, res) => {
   .then((response)=> {
       //console.log(response);
       if (response == null) {
+        connect.updateColor(req.body.color),
         connect.collection.users
         .insertOne(objet).then((response1)=>{
           res.json(response1);

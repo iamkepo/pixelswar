@@ -59,7 +59,7 @@ async function updateCellule(param) {
   });
 }
 
-//nfts
+//colors
 async function insertColors() {
   var tab = [];
   for (let i = 25; i <30; i++) {
@@ -79,7 +79,13 @@ async function insertColors() {
     console.log(response);
   });
 }
-
+async function updateColor(param) {
+  await client.db('truf').collection('testColors')
+  .updateOne(
+    {_id: ObjectId(param)},
+    { $set: { etat: true } }
+  )
+}
 //history
 async function insertHistory(param) {
   await client.db('truf').collection('history')
@@ -87,20 +93,43 @@ async function insertHistory(param) {
     {_id: ObjectId(process.env.TABLE || "627121f86fa63e06a430eae8")},
     { $push: { table: param } }
   ).then((response)=>{
-    console.log(response.modifiedCount);
+    //console.log(response.modifiedCount);
   });
 }
-
+//test color
+//nfts
+async function testColors() {
+  var tab = [];
+  for (let i = 150; i <200; i++) {
+    for (let j = 150; j < 200; j++) {
+      for (let k = 150; k < 200; k++) {
+        var objet = {
+          etat: false,
+          value: 1,
+          color: "rgb("+i+","+j+","+k+")",
+        };
+        tab = tab.concat(objet)
+        console.log(objet.color);
+      }
+    }
+  }
+  await client.db('truf').collection('testColors').insertMany(tab).then((response)=>{
+    console.log(response);
+  });
+}
 module.exports = {
   start : run,
   insertCellules: insertCellules,
   insertColors: insertColors,
   updateCellule: updateCellule,
+  testColors: testColors,
+  updateColor: updateColor,
   config: config,
   collection: {
     users: client.db('truf').collection('users'),
     cellules : client.db('truf').collection('cellules'),
     colors : client.db('truf').collection('colors'),
-    history : client.db('truf').collection('history')
+    history : client.db('truf').collection('history'),
+    testColors : client.db('truf').collection('testColors')
   }
 };

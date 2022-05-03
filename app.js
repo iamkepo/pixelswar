@@ -1,5 +1,5 @@
 var socket = io();
-const baseURL = "http://192.168.9.122:3000";
+const baseURL = "https://pixel-war.herokuapp.com";
 var game = document.querySelector('.game');
 var table = document.querySelector('table');
 var user = {};

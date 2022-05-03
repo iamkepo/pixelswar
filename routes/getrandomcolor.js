@@ -4,7 +4,7 @@ var connect = require('../db/connect');
 
 router.get('/', (req, res) => {
   var quary = {etat:false};
-  connect.collection.colors
+  connect.collection.testColors
   .find(quary)
   .toArray(function (err, result) {
     if (err) {
