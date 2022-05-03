@@ -2,11 +2,10 @@ var socket = io();
 const baseURL = "http://192.168.9.122:3000";
 var game = document.querySelector('.game');
 var table = document.querySelector('table');
-var user = {
-  _id: "user",
-  color: "rgb(255,0,0)"
-};
-var cellules = [];
+var user = {};
+var _color = undefined;
+var tampon = undefined;
+
 axios({
   method: 'get',
   url: baseURL+"/getconfig",
@@ -28,26 +27,31 @@ axios({
     }
   }
   game.style.display = "flex";
-  cellules = response.data.cellules;
   var cellule = document.querySelectorAll('.cellule');
   for (let i = 0; i < cellule.length; i++) {
-    cellule[i].style.backgroundColor = cellules[i].color
+    cellule[i].style.backgroundColor = response.data.cellules[i].color;
 
     cellule[i].onclick = (event) => {
-      if (user._id) {
-        if (cellules[i].color != user.color) {
-          var click = {
-            _id: cellules[i]._id,
-            index: i, 
-            color: user.color
-          };
-          console.log(click);
-          socket.emit('Click', click);
-        }
-        
+      if (_color != undefined) {
+        var click = {
+          _id: response.data.cellules[i]._id,
+          index: i, 
+          color: _color
+        };
+        backgroundColor(click)
       } else {
         page("Login");
       }
+    }
+  }
+})
+
+socket.on('Click', (click) => {
+  //console.log(click);
+  var cellule = document.querySelectorAll('.cellule');
+  for (let j = 0; j < cellule.length; j++) {
+    if (click.index == j) {
+      cellule[j].style.backgroundColor = click.color
     }
   }
 })
@@ -57,15 +61,6 @@ window.addEventListener('load',(event)=>{
   //mode()
 })
 
-socket.on('Click', (click) => {
-  console.log(click);
-  var cellule = document.querySelectorAll('.cellule');
-  for (let j = 0; j < cellule.length; j++) {
-    if (click.index == j) {
-      cellule[j].style.backgroundColor = click.color
-    }
-  }
-})
 
 var color = document.querySelector('.color');
 var choix = document.querySelector('.choix');
@@ -100,6 +95,18 @@ function page(param) {
       log.style.display = "none";
       reg.style.display = "none";
       game.style.display = "flex";
+      var _id = localStorage.getItem("pixelwaruserid");
+      console.log(_id);
+      if (_id != null) {
+        axios({
+          method: 'get',
+          url: baseURL+"/getuser/"+_id,
+        }).then((response)=>{
+          user = response.data;
+          getcolor(response.data.palette[0]);
+        })
+        
+      }
     break;
   }
 }
@@ -108,13 +115,24 @@ function register() {
   if (psoeudo.value  && email.value  && password.value ) {
     if (password.value == passwordconfirm.value ) {
       var data = {
-        ...user,
         psoeudo: psoeudo.value,
         email: email.value,
         password: password.value,
+        color: tampon
       };
-
-      socket.emit('Register', data);
+      axios({
+        method: 'post',
+        url: baseURL+"/setuser",
+        data: data
+      }).then((response)=>{
+        //console.log(response);
+        if (response.data.message) {
+          alert(response.data.message)
+        } else {
+          localStorage.setItem("pixelwaruserid", response.data.insertedId);
+          window.location.assign(baseURL);
+        }
+      })
     } else {
       alert("mot de passe non confimer")
     }
@@ -129,46 +147,37 @@ function login() {
       email: mail.value,
       password: pass.value,
     };
-
-    socket.emit('Login', data);
+    axios({
+      method: 'post',
+      url: baseURL+"/login",
+      data: data
+    }).then((response)=>{
+      //console.log(response);
+      if (response.data.message) {
+        alert(response.data.message)
+      } else {
+        localStorage.setItem("pixelwaruserid", response.data._id);
+        window.location.assign(baseURL);
+      }
+    })
   } else {
     alert("il faut remplir tous les champs")
   }
 }
 
 function randomColor() {
-  socket.emit('Color');
+  axios({
+    method: 'get',
+    url: baseURL+"/getrandomcolor",
+  }).then((response)=>{
+    //console.log(response);
+    tampon = response.data._id;
+    color.style.backgroundColor= response.data.color;
+    choix.style.backgroundColor= response.data.color;
+    colorname.textContent = response.data.color;
+  })
 }
 
-socket.on('Color', (objet) => {
-  console.log(objet);
-  user = {
-    ...user,
-    nft: objet.index
-  }
-  color.style.backgroundColor= objet.nft;
-  choix.style.backgroundColor= objet.nft
-  colorname.textContent = objet.nft;
-})
-
-socket.on('Register', (response) => {
-  console.log(response);
-  alert(response.message);
-  if (response.message == "regist sucess") {
-    page("Login");
-    mail.value= email.value;
-    pass.value= password.value;
-  }
-})
-
-socket.on('Login', (response) => {
-  console.log(response);
-  alert(response.message);
-  if (response.message == "log sucess") {
-    page("");
-    user = response.user
-  }
-})
 function mode() {
   var mode = document.querySelector(".mode-btn");
   var body = document.querySelector("body");
@@ -191,4 +200,26 @@ function mode() {
     mode.style.color= "rgb(0,0,0)";
   }
   
+}
+
+function getcolor(param) {
+  axios({
+    method: 'get',
+    url: baseURL+"/getcolor/"+param,
+  }).then((response)=>{
+    _color = response.data
+  })
+}
+
+function backgroundColor(click) {
+  var cellule = document.querySelectorAll('.cellule');
+  for (let i = 0; i < cellule.length; i++) {
+    if (click.index == i) {
+      console.log(cellule[i].style.backgroundColor.replaceAll(" ", "") != _color);
+      if (cellule[i].style.backgroundColor.replaceAll(" ", "") != _color) {
+        //console.log(click);
+        socket.emit('Click', click);
+      }
+    }
+  }
 }

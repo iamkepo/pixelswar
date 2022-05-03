@@ -3,12 +3,12 @@ var router = express.Router();
 const { ObjectId } = require('mongodb');
 var connect = require('../db/connect');
 
-router.get('/:userid', (req, res) => {
-  var quary = {_id: ObjectId(req.params.userid)};
-  connect.collection.users
-  .findOne(quary)
+router.get('/:color', (req, res) => {
+  connect.collection.colors
+  .findOne({_id: ObjectId(req.params.color)})
   .then((response)=> {
-      res.json(response);
+  //console.log(response.color);
+  res.json(response.color);
   });
 
 });

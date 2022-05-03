@@ -1,16 +1,16 @@
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 const uri = `mongodb://localhost:27017`;
 const clusterUrl = process.env.MONGODB_URL || uri;
 const client = new MongoClient(clusterUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 
-//const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 const config = {
-  width: 1400,
-  height: 600,
-  colonnes: 100,
-  lignes: 50,
+  width: 1450,
+  height: 700,
+  colonnes: 200,
+  lignes: 100,
 };
+
 async function run() {
 
   try{
@@ -27,6 +27,7 @@ async function run() {
 
   }
 }
+
 //cellules
 async function insertCellules() {
   var index = 0;
@@ -38,7 +39,7 @@ async function insertCellules() {
       };
       await client.db('truf').collection('cellules').insertOne(cellule);
       cellule.date = new Date().getTime();
-      await client.db('truf').collection('history').insertOne(cellule)
+      insertHistory(cellule)
       console.log(index);
       index = index+1;
     }
@@ -58,32 +59,38 @@ async function updateCellule(param) {
   });
 }
 
-
 //nfts
 async function insertColors() {
-  var index = 0;
-  for (let i = 0; i < 50; i++) {
-    for (let j = 0; j < 20; j++) {
-      for (let k = 0; k < 10; k++) {
+  var tab = [];
+  for (let i = 25; i <30; i++) {
+    for (let j = 0; j < 256; j++) {
+      for (let k = 0; k < 256; k++) {
         var objet = {
-          index: index,
           etat: false,
           value: 1,
-          nft: "rgb("+i+","+j+","+k+")",
+          color: "rgb("+i+","+j+","+k+")",
         };
-        console.log(objet.nft);
-        await client.db('truf').collection('colors').insertOne(objet);
-        index = index+1;
+        tab = tab.concat(objet)
+        console.log(objet.color);
       }
     }
   }
-}
-//history
-async function insertHistory(param) {
-  await client.db('truf').collection('history').insertOne(param).then((response)=>{
+  await client.db('truf').collection('colors').insertMany(tab).then((response)=>{
     console.log(response);
   });
 }
+
+//history
+async function insertHistory(param) {
+  await client.db('truf').collection('history')
+  .updateOne(
+    {_id: ObjectId(process.env.TABLE || "627121f86fa63e06a430eae8")},
+    { $push: { table: param } }
+  ).then((response)=>{
+    console.log(response.modifiedCount);
+  });
+}
+
 module.exports = {
   start : run,
   insertCellules: insertCellules,
