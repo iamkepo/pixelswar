@@ -86,18 +86,17 @@ async function updateColor(param) {
     { $set: { etat: true } }
   )
 }
+
 //history
 async function insertHistory(param) {
   await client.db('truf').collection('history')
   .updateOne(
-    {_id: ObjectId(process.env.TABLE || "627121f86fa63e06a430eae8")},
+    {_id: ObjectId(process.env.TABLE || "62718d63f25cf6cd5bfac3b0")},
     { $push: { table: param } }
-  ).then((response)=>{
-    //console.log(response.modifiedCount);
-  });
+  )
 }
+
 //test color
-//nfts
 async function testColors() {
   var tab = [];
   for (let i = 150; i <200; i++) {
@@ -117,6 +116,7 @@ async function testColors() {
     console.log(response);
   });
 }
+
 module.exports = {
   start : run,
   insertCellules: insertCellules,
