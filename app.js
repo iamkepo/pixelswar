@@ -1,5 +1,5 @@
 var socket = io();
-const baseURL = "https://pixelswar.herokuapp.com";
+const baseURL = "https://pixelswar.vercel.app";
 var game = document.querySelector('.game');
 var table = document.querySelector('table');
 var user = {};
