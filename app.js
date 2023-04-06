@@ -1,5 +1,7 @@
-var socket = io();
+import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
+
 const baseURL = "https://pixelswar.vercel.app";
+var socket  = io(baseURL);
 var game = document.querySelector('.game');
 var table = document.querySelector('table');
 var user = {};
